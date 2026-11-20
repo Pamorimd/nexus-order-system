@@ -1,0 +1,10 @@
+services:
+  nexus-core:
+    build: .
+    container_name: nexus-order-system
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    command: python src/nexus/adapters/entrypoints/cli.py
