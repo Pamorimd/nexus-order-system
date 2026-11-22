@@ -1,0 +1,36 @@
+classDiagram
+    class CreateOrderUseCase {
+        -order_repository: OrderRepositoryPort
+        -shipping_strategies: dict
+        +execute(input_dto: CreateOrderInputDTO) OrderOutputDTO
+    }
+
+    class ShippingStrategy {
+        <<interface>>
+        +name: str
+        +calculate(origin_cep: str, destination_cep: str, total_weight_kg: float) Money
+        +estimated_delivery_days() int
+    }
+
+    class SedexShippingStrategy {
+        +name: str
+        +calculate(origin_cep: str, destination_cep: str, total_weight_kg: float) Money
+        +estimated_delivery_days() int
+    }
+
+    class PacShippingStrategy {
+        +name: str
+        +calculate(origin_cep: str, destination_cep: str, total_weight_kg: float) Money
+        +estimated_delivery_days() int
+    }
+
+    class ExpressTransportadoraShippingStrategy {
+        +name: str
+        +calculate(origin_cep: str, destination_cep: str, total_weight_kg: float) Money
+        +estimated_delivery_days() int
+    }
+
+    CreateOrderUseCase o--> ShippingStrategy : utiliza via polimorfismo
+    ShippingStrategy <|.. SedexShippingStrategy : implementa
+    ShippingStrategy <|.. PacShippingStrategy : implementa
+    ShippingStrategy <|.. ExpressTransportadoraShippingStrategy : implementa
