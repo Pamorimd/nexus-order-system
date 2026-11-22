@@ -1,0 +1,46 @@
+classDiagram
+    class PaymentGatewayFactory {
+        -enable_resilience: bool
+        -shared_circuit_breaker: CircuitBreaker
+        +create(method: PaymentMethod, simulate_network_failure: bool) PaymentGatewayPort
+    }
+
+    class PaymentGatewayPort {
+        <<interface>>
+        +gateway_name: str
+        +process_payment(request: PaymentRequest) PaymentResult
+    }
+
+    class RefundablePaymentPort {
+        <<interface>>
+        +process_refund(transaction_id: str, amount: Money) RefundResult
+    }
+
+    class PixPaymentGateway {
+        +process_payment(request: PaymentRequest) PaymentResult
+        +process_refund(transaction_id: str, amount: Money) RefundResult
+    }
+
+    class CreditCardPaymentGateway {
+        +process_payment(request: PaymentRequest) PaymentResult
+        +process_refund(transaction_id: str, amount: Money) RefundResult
+    }
+
+    class BoletoPaymentGateway {
+        +process_payment(request: PaymentRequest) PaymentResult
+    }
+
+    class ResilientPaymentGateway {
+        -inner_gateway: PaymentGatewayPort
+        -circuit_breaker: CircuitBreaker
+        +process_payment(request: PaymentRequest) PaymentResult
+        +process_refund(transaction_id: str, amount: Money) RefundResult
+    }
+
+    PaymentGatewayPort <|-- RefundablePaymentPort : herda
+    RefundablePaymentPort <|.. PixPaymentGateway : implementa
+    RefundablePaymentPort <|.. CreditCardPaymentGateway : implementa
+    PaymentGatewayPort <|.. BoletoPaymentGateway : implementa
+    RefundablePaymentPort <|.. ResilientPaymentGateway : decora / implementa
+    PaymentGatewayFactory ..> PaymentGatewayPort : instancia
+    ResilientPaymentGateway o--> PaymentGatewayPort : delega com resiliência
