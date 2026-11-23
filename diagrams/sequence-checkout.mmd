@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    actor Cliente as Cliente / Comprador
+    participant CLI as CLI Controller
+    participant CreateUC as CreateOrderUseCase
+    participant Strategy as ShippingStrategy (Sedex)
+    participant Order as Order Aggregate
+    participant Repo as OrderRepositoryPort
+    participant PayUC as ProcessPaymentUseCase
+    participant Factory as PaymentGatewayFactory
+    participant ResilientGW as ResilientPaymentGateway
+    participant CB as CircuitBreaker
+    participant PixGW as PixPaymentGateway
+    participant State as OrderState (Pending->Paid)
+
+    Cliente->>CLI: Solicita criação de pedido com frete Sedex
+    CLI->>CreateUC: execute(CreateOrderInputDTO)
+    CreateUC->>Strategy: calculate(origem, destino, peso)
+    Strategy-->>CreateUC: Money(R$ 37.35)
+    CreateUC->>Order: Order(items, shipping_cost, discount)
+    Note over Order,State: Estado inicial instanciado: PendingPaymentState
+    CreateUC->>Repo: save(order)
+    Repo-->>CreateUC: Pedido salvo
+    CreateUC-->>CLI: OrderOutputDTO (Status: PENDING_PAYMENT)
+    CLI-->>Cliente: Exibe dados do pedido e resumo financeiro
+
+    Cliente->>CLI: Confirma pagamento via Pix
+    CLI->>PayUC: execute(ProcessPaymentInputDTO)
+    PayUC->>Repo: find_by_id(order_id)
+    Repo-->>PayUC: Instância de Order
+    PayUC->>Factory: create(PaymentMethod.PIX)
+    Factory-->>PayUC: Instância de ResilientPaymentGateway(PixGateway)
+    PayUC->>ResilientGW: process_payment(PaymentRequest)
+    ResilientGW->>CB: before_call()
+    Note over CB: Estado atual: CLOSED (Permite passagem)
+    CB-->>ResilientGW: OK
+    ResilientGW->>PixGW: process_payment(PaymentRequest)
+    PixGW-->>ResilientGW: PaymentResult(success=True, tx_id="PIX-...")
+    ResilientGW->>CB: record_success()
+    ResilientGW-->>PayUC: PaymentResult
+    PayUC->>Order: pay(transaction_id)
+    Order->>State: pay(order, transaction_id)
+    State->>Order: set_state(PaidState)
+    PayUC->>Repo: save(order)
+    PayUC-->>CLI: ProcessPaymentOutputDTO (Status: PAID)
+    CLI-->>Cliente: Exibe confirmação imediata e comprovante Pix
