@@ -1,0 +1,17 @@
+graph TD
+    User["Cliente / Comprador<br>[Pessoa]"]
+    Admin["Operador Logístico<br>[Pessoa]"]
+
+    subgraph NexusBoundary["Nexus Order System [Container Boundary]"]
+        CLI["CLI / Terminal Entrypoint<br>[Python CLI / Python 3.10]<br>Interface de linha de comando para operadores e checkout"]
+        CoreEngine["Nexus Core Engine<br>[Python Package / Clean Architecture]<br>Orquestra casos de uso, regras de negócio e resiliência"]
+        DataStore["In-Memory / SQLite Repository<br>[Data Store]<br>Armazena agregados de pedidos e transações"]
+    end
+
+    ExternalGateways["Gateways Financeiros & Logísticos Externos<br>[External APIs]<br>Pix, Adquirentes e Correios"]
+
+    User -- "fluxo: Executa comandos de criação e pagamento" --> CLI
+    Admin -- "fluxo: Executa comandos de despacho" --> CLI
+    CLI -- "chamada: Invoca casos de uso da aplicação" --> CoreEngine
+    CoreEngine -- "chamada: Persiste e consulta agregados Order" --> DataStore
+    CoreEngine -- "chamada: Transações protegidas por Circuit Breaker" --> ExternalGateways

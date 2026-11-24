@@ -1,0 +1,55 @@
+graph TD
+    subgraph NexusCoreEngine["Nexus Core Engine [Component Boundary]"]
+        CLIController["CLI Controller<br>[adapters/entrypoints/cli.py]<br>Captura comandos do usuário e formata saídas"]
+
+        subgraph ApplicationLayer["Application Layer (Casos de Uso)"]
+            CreateOrderUC["CreateOrderUseCase<br>[application/use_cases.py]<br>Valida itens, frete, descontos e cria pedido"]
+            ProcessPaymentUC["ProcessPaymentUseCase<br>[application/use_cases.py]<br>Orquestra liquidação financeira com gateway"]
+            ShipOrderUC["ShipOrderUseCase<br>[application/use_cases.py]<br>Gerencia despacho de remessas"]
+        end
+
+        subgraph DomainLayer["Domain Layer (Hexagonal Core)"]
+            OrderAggregate["Order & OrderItem Entities<br>[domain/entities.py]<br>Invariantes, cálculos monetários e State"]
+            StatePattern["OrderState Hierarchy<br>[domain/states.py]<br>Pending, Paid, Shipped, Cancelled"]
+            StrategyPattern["ShippingStrategy Family<br>[domain/strategies.py]<br>Sedex, PAC, ExpressTransportadora"]
+            DomainPorts["Domain Ports (Interfaces)<br>[domain/ports.py]<br>PaymentGatewayPort, OrderRepositoryPort, ShippingCalculatorPort"]
+        end
+
+        subgraph ResilienceLayer["Resilience Layer (Padrão Transversal 18.4)"]
+            ResilientDecorator["ResilientPaymentGateway<br>[resilience/resilient_gateway.py]<br>Decora gateways com tolerância a falhas"]
+            CircuitBreakerComp["CircuitBreaker<br>[resilience/circuit_breaker.py]<br>Closed, Open, Half-Open"]
+            RetryPolicy["Retry Policy<br>[resilience/retry.py]<br>Exponential backoff"]
+        end
+
+        subgraph AdaptersLayer["Adapters Layer (Infraestrutura)"]
+            GatewayFactory["PaymentGatewayFactory<br>[adapters/gateways/factory.py]<br>GoF Factory Method"]
+            PixAdapter["PixPaymentGateway<br>[adapters/gateways/pix.py]"]
+            CardAdapter["CreditCardPaymentGateway<br>[adapters/gateways/credit_card.py]"]
+            BoletoAdapter["BoletoPaymentGateway<br>[adapters/gateways/boleto.py]"]
+            MemoryRepo["InMemoryOrderRepository<br>[adapters/persistence/memory_repo.py]"]
+        end
+    end
+
+    CLIController -- "fluxo: Dispara comandos de checkout" --> CreateOrderUC
+    CLIController -- "fluxo: Dispara pagamento" --> ProcessPaymentUC
+    CLIController -- "fluxo: Dispara envio" --> ShipOrderUC
+
+    CreateOrderUC -- "chamada: Calcula frete via Strategy" --> StrategyPattern
+    CreateOrderUC -- "chamada: Instancia e valida agregado" --> OrderAggregate
+    CreateOrderUC -- "chamada: Salva pedido na porta" --> DomainPorts
+
+    ProcessPaymentUC -- "chamada: Solicita gateway à fábrica" --> GatewayFactory
+    GatewayFactory -- "chamada: Cria e encapsula no Decorador" --> ResilientDecorator
+    ResilientDecorator -- "chamada: Controla abertura de circuito" --> CircuitBreakerComp
+    ResilientDecorator -- "chamada: Executa repetições com backoff" --> RetryPolicy
+    ResilientDecorator -- "chamada: Encaminha chamada ao adaptador concreto" --> PixAdapter
+    ResilientDecorator -- "chamada: Encaminha chamada ao adaptador concreto" --> CardAdapter
+    ResilientDecorator -- "chamada: Encaminha chamada ao adaptador concreto" --> BoletoAdapter
+
+    ProcessPaymentUC -- "chamada: Executa transição pay() delegada ao State" --> OrderAggregate
+    OrderAggregate -- "chamada: Modifica estado corrente" --> StatePattern
+
+    DomainPorts -. "fluxo: Implementado por" .-> MemoryRepo
+    DomainPorts -. "fluxo: Implementado por" .-> PixAdapter
+    DomainPorts -. "fluxo: Implementado por" .-> CardAdapter
+    DomainPorts -. "fluxo: Implementado por" .-> BoletoAdapter

@@ -1,0 +1,15 @@
+graph TD
+    User["Cliente / Comprador<br>[Pessoa]"]
+    Admin["Operador Logístico / Admin<br>[Pessoa]"]
+    Nexus["<b>Nexus Order System</b><br>[Software System]<br>Motor de pedidos, tarifação e liquidação"]
+    BacenPix["Banco Central / Pix SPI<br>[External System]<br>Arranjo de Pagamentos Instantâneos"]
+    CardAcquirer["Adquirente de Cartão<br>[External System]<br>Cielo / Stone / Stripe"]
+    Correios["Serviço Postal (Correios)<br>[External System]<br>Cálculo de CEP, Sedex e PAC"]
+    Transportadora["Transportadora Privada<br>[External System]<br>Malha aérea e rodoviária expressa"]
+
+    User -- "chamada: Realiza checkout e consulta pedido" --> Nexus
+    Admin -- "chamada: Consulta status e solicita despacho" --> Nexus
+    Nexus -- "chamada: Liquida pagamento instantâneo" --> BacenPix
+    Nexus -- "chamada: Captura e autoriza transação de crédito" --> CardAcquirer
+    Nexus -- "chamada: Consulta frete e prazo por CEP" --> Correios
+    Nexus -- "chamada: Consulta cotação expressa" --> Transportadora
