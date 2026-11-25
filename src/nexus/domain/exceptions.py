@@ -39,3 +39,9 @@ class CircuitBreakerOpenError(DomainError):
 
 class ShippingCalculationError(DomainError):
     """Lançada quando o cálculo de frete não pode ser concluído para a rota."""
+
+
+class ExternalCallTimeoutError(DomainError):
+    """Lançada quando uma chamada a serviço externo excede o tempo limite."""
+
+    is_transient = True

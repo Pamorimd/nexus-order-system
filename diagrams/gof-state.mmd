@@ -1,0 +1,53 @@
+classDiagram
+    class Order {
+        -order_id: str
+        -customer_email: str
+        -_state: OrderState
+        +status: OrderStatus
+        +pay(transaction_id: str) void
+        +ship(tracking_code: str) void
+        +cancel(reason: str) void
+        +set_state(new_state: OrderState) void
+    }
+
+    class OrderState {
+        <<interface>>
+        +get_status() OrderStatus
+        +pay(order: Order, transaction_id: str) void
+        +ship(order: Order, tracking_code: str) void
+        +cancel(order: Order, reason: str) void
+    }
+
+    class PendingPaymentState {
+        +get_status() OrderStatus
+        +pay(order: Order, transaction_id: str) void
+        +ship(order: Order, tracking_code: str) void
+        +cancel(order: Order, reason: str) void
+    }
+
+    class PaidState {
+        +get_status() OrderStatus
+        +pay(order: Order, transaction_id: str) void
+        +ship(order: Order, tracking_code: str) void
+        +cancel(order: Order, reason: str) void
+    }
+
+    class ShippedState {
+        +get_status() OrderStatus
+        +pay(order: Order, transaction_id: str) void
+        +ship(order: Order, tracking_code: str) void
+        +cancel(order: Order, reason: str) void
+    }
+
+    class CancelledState {
+        +get_status() OrderStatus
+        +pay(order: Order, transaction_id: str) void
+        +ship(order: Order, tracking_code: str) void
+        +cancel(order: Order, reason: str) void
+    }
+
+    Order o--> OrderState : delega transições
+    OrderState <|.. PendingPaymentState : implementa
+    OrderState <|.. PaidState : implementa
+    OrderState <|.. ShippedState : implementa
+    OrderState <|.. CancelledState : implementa

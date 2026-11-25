@@ -1,7 +1,7 @@
 """Testes unitários das entidades de domínio e value objects (SRP e Invariantes)."""
 
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
 from nexus.domain.entities import Order, OrderItem
 from nexus.domain.exceptions import (
@@ -59,7 +59,11 @@ class TestDomainEntities(unittest.TestCase):
 
     def test_order_cannot_be_empty(self) -> None:
         with self.assertRaises(EmptyOrderError):
-            Order(customer_email="teste@puc.br", delivery_address=self.sample_address, items=[])
+            Order(
+                customer_email="teste@puc.br",
+                delivery_address=self.sample_address,
+                items=[],
+            )
 
     def test_order_financial_totals(self) -> None:
         items = [

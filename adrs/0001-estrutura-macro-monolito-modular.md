@@ -26,4 +26,4 @@ Decidimos adotar o estilo arquitetural **Monolito Modular** (Capítulo 5 do livr
 * **Risco de Acoplamento Acidental:** Exige disciplina estrita da equipe para não violar as fronteiras de módulos (mitigado pelo linter e arquitetura hexagonal).
 
 ## Pull Request
-Implementado via Pull Request [#1](https://github.com/Pamorimd/nexus-order-system/pull/1) (feat/scaffold-macro-monolito).
+Implementado via Pull Request [#1](https://github.com/Pamorimd/nexus-order-system/pull/1) (`feat/domain-model-and-entities`), que cria o núcleo do monolito. A estrutura inicial do repositório entrou antes dos PRs, no commit de scaffold `287a995`.

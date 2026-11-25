@@ -6,10 +6,10 @@ garantindo invariantes de negócio na própria instanciação.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from decimal import Decimal, ROUND_HALF_EVEN
-from enum import Enum
 import uuid
+from dataclasses import dataclass
+from decimal import ROUND_HALF_EVEN, Decimal
+from enum import Enum
 
 from nexus.domain.exceptions import CurrencyMismatchError, InvalidAmountError
 

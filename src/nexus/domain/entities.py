@@ -6,7 +6,7 @@ estritamente as invariantes de negócio e orquestra o padrão State.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from nexus.domain.exceptions import EmptyOrderError, InvalidAmountError
@@ -97,7 +97,7 @@ class Order:
         self._state.pay(self, transaction_id)
 
     def ship(self, tracking_code: str) -> None:
-        """Despacha o pedido para entrega."""
+        """Despacha o pedido delegando a transição ao estado corrente."""
         self._state.ship(self, tracking_code)
 
     def cancel(self, reason: str) -> None:
