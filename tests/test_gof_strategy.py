@@ -1,6 +1,5 @@
 """Testes do Padrão GoF: Strategy (Cálculo de Frete e Descontos)."""
 
-
 import unittest
 from decimal import Decimal
 
@@ -22,11 +21,15 @@ class TestGofStrategy(unittest.TestCase):
         self.assertEqual(strategy.estimated_delivery_days(), 2)
 
         # Mesmo estado (início do CEP igual): 25 + (2 * 6.5) = 38.00
-        cost_same_state = strategy.calculate("13083852", "13010000", total_weight_kg=2.0)
+        cost_same_state = strategy.calculate(
+            "13083852", "13010000", total_weight_kg=2.0
+        )
         self.assertEqual(cost_same_state.amount, Decimal("38.00"))
 
         # Estados distintos (primeiro dígito diferente): 25 + (2 * 6.5) + 10 = 48.00
-        cost_interstate = strategy.calculate("13083852", "01000000", total_weight_kg=2.0)
+        cost_interstate = strategy.calculate(
+            "13083852", "01000000", total_weight_kg=2.0
+        )
         self.assertEqual(cost_interstate.amount, Decimal("48.00"))
 
     def test_pac_shipping_strategy(self) -> None:
@@ -53,7 +56,9 @@ class TestGofStrategy(unittest.TestCase):
         no_discount = NoDiscountStrategy().apply_discount(subtotal)
         self.assertEqual(no_discount.amount, Decimal("0.00"))
 
-        pct_discount = PercentageDiscountStrategy(Decimal("15.0")).apply_discount(subtotal)
+        pct_discount = PercentageDiscountStrategy(Decimal("15.0")).apply_discount(
+            subtotal
+        )
         self.assertEqual(pct_discount.amount, Decimal("30.00"))
 
         pix_cashback = PixCashbackDiscountStrategy().apply_discount(subtotal)

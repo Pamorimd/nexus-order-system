@@ -46,7 +46,9 @@ class SedexShippingStrategy(ShippingStrategy):
         base_rate = Decimal("25.00")
         weight_rate = Decimal(str(total_weight_kg)) * Decimal("6.50")
         # Adicional interestadual se os primeiros dígitos do CEP diferirem
-        interstate_fee = Decimal("10.00") if origin_cep[0] != destination_cep[0] else Decimal("0.00")
+        interstate_fee = (
+            Decimal("10.00") if origin_cep[0] != destination_cep[0] else Decimal("0.00")
+        )
         return Money(amount=base_rate + weight_rate + interstate_fee)
 
     def estimated_delivery_days(self) -> int:
@@ -66,7 +68,9 @@ class PacShippingStrategy(ShippingStrategy):
         # Tarifa base econômica + R$ 3.00 por kg
         base_rate = Decimal("14.00")
         weight_rate = Decimal(str(total_weight_kg)) * Decimal("3.00")
-        interstate_fee = Decimal("5.00") if origin_cep[0] != destination_cep[0] else Decimal("0.00")
+        interstate_fee = (
+            Decimal("5.00") if origin_cep[0] != destination_cep[0] else Decimal("0.00")
+        )
         return Money(amount=base_rate + weight_rate + interstate_fee)
 
     def estimated_delivery_days(self) -> int:
