@@ -8,7 +8,7 @@ Sem mecanismos de proteção, uma chamada demorada pode atrasar o fluxo de proce
 
 ## 7.2. Decisão
 
-Foi adotado o padrão transversal de **Resiliência**, conforme o capítulo 18.4 do livro da disciplina. A implementação combina três mecanismos:
+Foi adotado o padrão transversal de **Resiliência**. A implementação combina três mecanismos:
 
 - **Timeout:** estabelece um limite de espera para chamadas externas. Quando o limite é excedido, é lançada a exceção `ExternalCallTimeoutError`.
 - **Retry com Exponential Backoff:** repete operações que falharam por motivos transitórios, aumentando progressivamente o intervalo entre as tentativas. Exceções de domínio não transitórias não são repetidas.
