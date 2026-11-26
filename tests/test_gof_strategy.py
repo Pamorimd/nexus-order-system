@@ -1,7 +1,8 @@
 """Testes do Padrão GoF: Strategy (Cálculo de Frete e Descontos)."""
 
-from decimal import Decimal
+
 import unittest
+from decimal import Decimal
 
 from nexus.domain.strategies import (
     ExpressTransportadoraShippingStrategy,
