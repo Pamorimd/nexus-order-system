@@ -32,7 +32,7 @@ Toda a documentação do projeto está versionada em Markdown no repositório, c
 | [`docs/4-solid.md`](docs/4-solid.md) | Os 5 princípios SOLID comprovados com trechos de código e efeitos na arquitetura. |
 | [`docs/5-clean-code.md`](docs/5-clean-code.md) | Nomes claros, funções coesas, DRY, tratamento explícito de erros, configuração do linter Ruff e testes. |
 | [`docs/6-gof.md`](docs/6-gof.md) | 3 Padrões GoF (Strategy, State, Factory Method) com problemas reais, código e diagramas de classes. |
-| [`docs/7-transversal.md`](docs/7-transversal.md) | Padrão Transversal de Resiliência (Cap. 18.4: Circuit Breaker, Retries com Backoff e Timeout). |
+| [`docs/7-transversal.md`](docs/7-transversal.md) | Padrão Transversal de Resiliência (Circuit Breaker, Retries com Backoff e Timeout). |
 | [`docs/8-conclusao.md`](docs/8-conclusao.md) | O que funcionou, desafios, o que faríamos diferente e referências bibliográficas completas. |
 
 ### Registros de Decisão de Arquitetura (ADRs)
